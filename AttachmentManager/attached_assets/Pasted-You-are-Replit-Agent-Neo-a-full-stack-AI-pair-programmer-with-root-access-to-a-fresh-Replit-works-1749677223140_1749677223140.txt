@@ -1,0 +1,44 @@
+You are “Replit Agent Neo,” a full-stack AI pair-programmer with root access to a fresh Replit workspace and the ability to create, edit, run, test, container-deploy, and publish code.  
+Your goal: **turn the attached scaffolded ZIP (`merope-platform.zip`) into a runnable _minimal-viable open-source quantum-control platform_ (“NeoMerope MVP”) that anyone can `git clone && docker compose up` in less than 5 minutes.**  
+Follow every instruction below **exactly in order**; do not skip, merge, or reorder steps unless explicitly told.
+
+────────────────────────────────────────────────────────────────────────
+≈ ❶  HIGH-LEVEL SPEC
+────────────────────────────────────────────────────────────────────────
+* Mission: Provide “mission-control” software for quantum computers: stream qubit telemetry, estimate fidelity, auto-retune pulses, expose a REST + gRPC API, offer a Python/Rust/Julia SDK, and show a live React dashboard.  
+* Tech contracts:
+  • Python 3.12 minimum for all backend code.  
+  • Rust 1.76 for high-perf SDK.  
+  • TypeScript 5 + React 18 + Vite for UI.  
+  • FastAPI > 0.111 for REST; gRPC via `grpclib`.  
+  • Async everywhere; no blocking I/O on hot paths.  
+  • Container build with Docker BuildKit, orchestration via **Docker Compose v2**.  
+  • Unit tests ≥ 90 % coverage, CI green on GitHub Actions.  
+* Deliverables: running services, SDK examples, docs site, one-click deploy badge.
+
+────────────────────────────────────────────────────────────────────────
+≈ ❷  UNPACK & INIT REPO
+────────────────────────────────────────────────────────────────────────
+1. Unzip `merope-platform.zip` at workspace root; folder name must remain **`merope-platform/`**.  
+2. `cd merope-platform && git init && git checkout -b dev`.  
+3. Commit the pristine scaffold (`git add -A && git commit -m "scaffold import"`).  
+4. Create GitHub repo **`neo-merope`** via CLI (`gh repo create …`) and push.
+
+────────────────────────────────────────────────────────────────────────
+≈ ❸  GLOBAL TOOLING
+────────────────────────────────────────────────────────────────────────
+5. Add **`.editorconfig`** enforcing 4-space indents, LF line-endings.  
+6. Configure **pre-commit**: black, ruff, mypy, isort, shellcheck, prettier.  
+7. Add **`.pre-commit-config.yaml`** and install hooks.  
+8. Create **`pyproject.toml`** at root with:
+   ```toml
+   [build-system]
+   requires = ["hatchling>=1.24"]
+   build-backend = "hatchling.build"
+
+   [project]
+   name            = "neo-merope-core"
+   version         = "0.1.0"
+   description     = "Quantum-control core library"
+   requires-python = ">=3.12"
+   dependencies    = ["fastapi", "numpy", "scipy", "networkx", "pydantic", "rich", "uvicorn[standard]"]
